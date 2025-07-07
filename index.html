@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de Entregáveis e Soluções - Gerenciamento Pleno</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #005f54;
+            --secondary-color: #2288c3;
+            --accent-color: #b9b9bc;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+            --border-color: #ddd;
+            --hover-color: #f1f1f1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { margin: 0; }
+        .tree, .tree ul {
+            list-style: none;
+            padding-left: 32px;
+        }
+        .tree li {
+            padding-left: 15px;
+            position: relative;
+            border-left: 1px solid var(--border-color);
+        }
+        .tree li:before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 10px;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        .tree-toggle {
+            cursor: pointer;
+            background-color: var(--light-bg);
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .tree-toggle:hover { background-color: var(--hover-color); }
+        .tree-toggle:before {
+            content: '+';
+            margin-right: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0 5px;
+            border-radius: 3px;
+        }
+        .tree-toggle.active:before {
+            content: '-';
+            background-color: var(--accent-color);
+        }
+        .tree-content { display: none; }
+        .tree-toggle.active + .tree-content { display: block; }
+        .group { font-weight: bold; font-size: 18px; color: var(--primary-color); }
+        .discipline { font-weight: 600; font-size: 16px; color: var(--secondary-color); }
+        .deliverable {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 5px 0;
+            padding: 10px 15px 40px; /* Adicionado padding-bottom para espaço dos botões */
+            position: relative;
+        }
+        .deliverable-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .deliverable-desc { font-size: 14px; color: #666; margin-top: 5px; }
+        .deliverable-meta { font-size: 13px; margin-top: 10px; }
+        .meta-label { font-weight: 600; color: var(--primary-color); }
+        .link-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .link-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .link-button:hover {
+            background: var(--accent-color);
+        }
+        .embed-container {
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            position: relative;
+            height: 600px;
+        }
+        .powerapps-embed, .powerbi-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close-embed {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 8px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .loading-embed {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Mapa de Entregáveis e Soluções - Gerenciamento Pleno</h1>
+        <p>Visualização integrada dos sistemas</p>
+        <input type="text" id="searchInput" placeholder="Digite para buscar entregáveis..." style="margin-top: 15px; padding: 10px; width: 90%; border: none; border-radius: 5px; font-size: 16px;">
+    </div>
+    <ul class="tree" id="mainTree">
+        <!-- Conteúdo será gerado pelo JavaScript -->
+    </ul>
+</div>
+
+<script>
+// Dados da planilha convertidos para JSON
+const data = [
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Gestão de Refeitórios, Alojamentos e Infra",
+        "Descrição/Objetivo": "Solução com checklists e registros de não conformidades em relações as condições de alojamentos e refeitórios",
+        "Solução Digital": "Power Platform",
+        "Links": []
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Central de Ações e Atas de Reunião",
+        "Descrição/Objetivo": "Central de Registro e monitoramento das atas de reuniões e ações das disciplinas do contrato",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/Efz8lGcC8NhBr4kjvQEmzNMBVw7LeKNK5RlZHvbWKptFuw?e=9ciV0V"]
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Gestão e Registro das Solicitações e Evidências de Aprovações de Horas Extras",
+        "Descrição/Objetivo": "Fluxo automatizado de aprovação de horas extras com solicitação via formulário digital. Gerando uma base consolidada para evidências de medição",
+        "Solução Digital": "Power Platform",
+        "Links": [
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EfGyj6xFv4dKlI8IQ6ztvOYBAtT3QvNH6o1APdyjK3HcfQ?e=9Oktwk",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EfMuxWQOLz1FrYKIrVEKrN0BGOUs1-bibaEzjxamIMygKA?e=EMm2O5"
+        ]
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Solicitações de Demandas/Melhorias Cliente para TNE",
+        "Descrição/Objetivo": "Melhorar a gestão de solicitações do cliente para a timenow visando melhorar a comunicação através de um canal único de solicitação de demandas",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EZyg24oPEaBLgoWoJgsXRUcBg22l8M4Wza-7vjVGMpI3Aw?e=fN7UAa"]
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Timesheet (Apontamento de Horas em Projetos)",
+        "Descrição/Objetivo": "Gestão das horas executadas nos projetos por colaborador permitindo geração de relatórios consolidados que auxiliam no processo de medição",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EYARQGScwMZJs040ISARUFUBBo5kZOC5MLEBxuPZJ6559Q?e=amOELZ"]
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "Consolidação dos dados da plataforma VEXPENSES",
+        "Descrição/Objetivo": "Automação para consolidação dos relatórios PDFs do VExpenses em um banco de dados único com os gastos de viagens",
+        "Solução Digital": "RPA",
+        "Links": []
+    },
+    {
+        "Grupo": "Administrativo",
+        "Disciplina": "Administrativo",
+        "Entregável": "ChatBot de Projetos",
+        "Descrição/Objetivo": "Solução para consulta de procedimentos, dúvidas e informações provenientes dentro do contrato via chat no teams (Chatbot)",
+        "Solução Digital": "MS Virtual Agents",
+        "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EdBTVHZ1w7NNq2muvd7EUUkBl1QDTDCTj_w-bveCVqg08Q?e=ca8R61"]
+    },
+    {
+        "Grupo": "Aquisições",
+        "Disciplina": "Aquisições",
+        "Entregável": "Controle de Contrações/Fornecimentos (Mapa de Suprimentos - MAS)",
+        "Descrição/Objetivo": "Monitoramento do andamento da contratação de fornecimentos de serviços e materiais, com prazos e status das contratações. Solução pode ser personalizada para extração de dados do SAP + Sistema Power Platform",
+        "Solução Digital": "Power Platform",
+        "Links": []
+    },
+    {
+        "Grupo": "Aquisições",
+        "Disciplina": "Aquisições",
+        "Entregável": "Controle de Entrada e Saída de materiais - Gestão do estoque de materiais",
+        "Descrição/Objetivo": "Controlar a entrada e saída de materiais via aplicativo com informações de quantidade, peso, fotos de evidência e geração do inventário",
+        "Solução Digital": "Power Platform",
+        "Links": [
+            "https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EYSbEjtenH9Gt89UityJQdIBIfPTP0pEeM4nn0hcIx_GzQ?e=dCeEJc",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EVcOLA94YG1Lss-VMX4HNzQBMIsUA97f1bFSBZ3do05qCQ?e=0rJB4X"
+        ]
+    },
+    {
+        "Grupo": "Aquisições",
+        "Disciplina": "Aquisições",
+        "Entregável": "IA Análise de Propostas Técnicas",
+        "Descrição/Objetivo": "Solução para auxílio na identificação das propostas técnicas mais aderentes as RTs usando inteligência artificial (Sugerindo notas e recomendações)",
+        "Solução Digital": "Kyno",
+        "Links": ["https://timenow-my.sharepoint.com/:v:/g/personal/guilherme_pacheco_timenow_com_br/ESez9phMInBMuaIYK7nLceoBlMOEOBeWMgGFV-_eZjarmA?e=sTX45R"]
+    },
+    {
+        "Grupo": "Contratos",
+        "Disciplina": "Contratos",
+        "Entregável": "Gestão BMs das empresas montadoras",
+        "Descrição/Objetivo": "Medições digitais com relatório de performance das construtoras e fornecedores e emissão de relatório de faturamento.\nFuncionalidades:\nDigitalização do processo de gestão de contratos;\nModelos padronizados de memória de cálculo;\nFluxo de envio, avaliação e aprovação conforme o processo do cliente;\nAcompanhamento dos status;\nAplicativo de e-RDO offline;\nMódulo de medição digital;\nGerenciamento de contrato em um só lugar;\nDashboards de acompanhamento avanço físico X financeiro;\nDashboards de apoio à ação anti-claim e análise de descolamento contratual;\nRegistro de evidências, efetivos e equipamentos;\nAcompanhamento de histograma de mão de obra e equipamentos;\nRelatórios em PDF e Excel.",
+        "Solução Digital": "OPPEM",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/gestao-digital-contratos.aspx"]
+    },
+    {
+        "Grupo": "Contratos",
+        "Disciplina": "Contratos",
+        "Entregável": "RDO Digital (Relatório Diário de Obras)",
+        "Descrição/Objetivo": "Emissão e Registro do relatório diário de obras em meio digital, com fotos, geração de PDFs, registro de histogramas etc + Integração com dashboards\nFuncionalidades:\nDigitalização do processo de gestão de contratos;\nModelos padronizados de memória de cálculo;\nFluxo de envio, avaliação e aprovação conforme o processo do cliente;\nAcompanhamento dos status;\nAplicativo de e-RDO offline;\nMódulo de medição digital;\nGerenciamento de contrato em um só lugar;\nDashboards de acompanhamento avanço físico X financeiro;\nDashboards de apoio à ação anti-claim e análise de descolamento contratual;\nRegistro de evidências, efetivos e equipamentos;\nAcompanhamento de histograma de mão de obra e equipamentos;\nRelatórios em PDF e Excel.",
+        "Solução Digital": "OPPEM",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/gestao-digital-contratos.aspx"]
+    },
+    {
+        "Grupo": "Engenharia",
+        "Disciplina": "Engenharia",
+        "Entregável": "Planejamento 4D",
+        "Descrição/Objetivo": "A partir do cronograma em padrão esperado e o modelo 3D, existem possibilidade de integração do visual às análises de planejamento. Bem como a gestão visual da obra através de relatórios de Monitoramento e Controle 4D.",
+        "Solução Digital": "A Definir",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/Planejamento-4D-(teste).aspx"]
+    },
+    {
+        "Grupo": "Engenharia",
+        "Disciplina": "Engenharia",
+        "Entregável": "Gestão da tramitação dos documentos de engenharia",
+        "Descrição/Objetivo": "Realizar a gestão dos documentos de engenharia, desde a emissão inicial até a revisão final. Acompanhando prazos e pendências",
+        "Solução Digital": "E-click/Autodesk/Power Platform",
+        "Links": [
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ESpLWgxvhENGgsNgOeIYx0AB63QpK07pEQICnGO57vGbwQ?e=Xp6a81",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ESnoXEqWIkFHs_rK8DYSjr0BjeGD2jG2eCCVGRzuCjGrVQ?e=3doIxS",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ETZMd6gmvIFIhThkNthLl_EBBwwpcRAwJ1_flYvjgXyhCg?e=sC4bjo"
+        ]
+    },
+    {
+        "Grupo": "Engenharia",
+        "Disciplina": "Engenharia",
+        "Entregável": "Gestão de solicitações de informações técnicas, alterações de projeto e Não conformidades do projeto",
+        "Descrição/Objetivo": "Realização de registros e tratativas de informações técnicas, alterações de projeto e Não conformidades do projeto. Mantendo comunicação clara entre os times de engenharia e implantação das contratadas e gerenciadora",
+        "Solução Digital": "Autodesk/PowerPlatform",
+        "Links": []
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Relatório Diário de Fiscalização",
+        "Descrição/Objetivo": "Relatório diário da fiscalização de campo da gerenciadora com informações relevantes da fiscalização sobre as frentes de obra (Desvios, Registros de paradas etc.)",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/Edb8jcMfUN5Hl5ur9d0_W58BRqBR71Jm6iheoepA6s8OtA?e=W43c1L"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Não Conformidades de fornecedores",
+        "Descrição/Objetivo": "Solução para registros e tratativas de não conformidades identificadas nos fornecedores (materiais, fornecimentos, documentos etc), personalizável com a necessidade do contrato",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/ET_A2qOhaX5Njekht0nyJ8YBnZhTxeRJDWtOk0d-KXTlUA?e=EsPXO7"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Modelos digitais 3D com captura de realidade",
+        "Descrição/Objetivo": "coletar dados precisos sobre o local, como a forma do terreno, a estrutura de construção existente e outros detalhes importantes. Esses dados são então processados por computadores para criar modelos digitais 3D altamente detalhados, que são essenciais para o planejamento, projeto e execução de projetos.",
+        "Solução Digital": "BIM Start",
+        "Links": ["https://bimstart.com.br/tecnology/"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Checklists de Inspeção e Listas de Verificação",
+        "Descrição/Objetivo": "Soluções para realizações de checklists de forma digital com geração de relatórios",
+        "Solução Digital": "Power Platform/Checkbits",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/plataforma-checklists.aspx"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Análise Preditiva de Falhas de Manutenção",
+        "Descrição/Objetivo": "Solução de machine learning que prevê e evita falhas em equipamentos e processos industriais, sem a necessidade de hardware instalado ou acesso físico à planta. Esta solução versátil, baseada em dados, pode ser aplicada em diferentes setores, reduzindo o tempo de inatividade e os custos de manutenção. A fonte de dados pode ser o historiador (PIMS, PI-System, Elipse Scada) ou base de dados própria do cliente. Diminua as perdas de produção, descubra a causa raiz das falhas, aumente a disponibilidade dos ativos e garanta mais lucro, eficiência e segurança em sua operação.\nFuncionalidades:\nDetecção e análise de anomalias em equipamentos ou processos;\nHistórico de anomalias em equipamentos ou processos;\nDashboard gerencial de processos.",
+        "Solução Digital": "Empresa Parceira",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/analise-preditiva-falhas.aspx"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Gestão de máquinas e equipamentos",
+        "Descrição/Objetivo": "Solução para otimizar o dimensionamento, a contratação e a gestão de máquinas móveis em projetos industriais. Aprimore o planejamento, a mobilização e a gestão logística de máquinas por meio de tecnologia e metodologias inovadoras que reduzem a ociosidade e os custos desnecessários com equipamentos, garantindo maior eficiência e economia em seus projetos. \nEntregas:\nEstudo de viabilidade técnica;\nEstudo de viabilidade econômica;\nPlanos de rigging 3D;\nPlanos de obra;\nVistoria in loco;\nGestão de máquinas durante a obra:\nCAAS (Crane as a service): disponibilidade física do maquinário e gestão completa do processo.\nOn-time: locação baseada no tempo necessário para a demanda;\nMarketplace de fornecedores.",
+        "Solução Digital": "Empresa Parceira",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/gestao-maquinas.aspx"]
+    },
+    {
+        "Grupo": "Implantação",
+        "Disciplina": "Fiscalização e Qualidade",
+        "Entregável": "Gestão por Imagem",
+        "Descrição/Objetivo": "Solução de fiscalização remota que permite monitorar seu projeto por meio de câmeras 360° ou drones, documentando e centralizando todas as informações em um único sistema. Acompanhe a evolução física da obra com visitas virtuais e compare as imagens com projetos 3D, garantindo uma gestão mais ágil, transparente e baseada em dados.",
+        "Solução Digital": "Construct In",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/gestao-imagem.aspx"]
+    },
+    {
+        "Grupo": "SSMA",
+        "Disciplina": "SSMA",
+        "Entregável": "Inspeções de campo, Listas de verificação e gestão de não conformidades",
+        "Descrição/Objetivo": "Plataforma de preenchimento de checklists e formulários de inspeções, identificação de não conformidades e realização de listas de verificação de forma digital (via computador ou celular) com geração de dashboards para gestão de todos os apontamentos",
+        "Solução Digital": "Plataforma Autodesk/PowerPlatform/Checkbits",
+        "Links": [
+            "https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EQp1yFGjVSlPnd6PK3O_pHkBzoYmJ2eiyoUxyk2rIkvJSA?e=jaurUQ",
+            "https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/plataforma-checklists.aspx",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ETkY2GZoWRRErPmCC4Fy_y4BuXiRlfyL5My5fp2BnR3BzQ?e=pooGEh"
+        ]
+    },
+    {
+        "Grupo": "SSMA",
+        "Disciplina": "SSMA",
+        "Entregável": "Gestão da entrada/mobilização de veículos e equipamentos",
+        "Descrição/Objetivo": "Realizar a gestão do processo de mobilização de novos veículos na área do cliente, veículos da timenow e de contratadas. Verificando documentação e conformidade dos equipamentos",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://apps.powerapps.com/play/e/default-67822b61-6451-4d22-a5a8-ec5321cd6b5d/a/69e2fcfd-e972-4034-bc77-730134ce2bd3?tenantId=67822b61-6451-4d22-a5a8-ec5321cd6b5d&hint=904d9992-bdc8-4f98-b27d-c68981304b1a&sourcetime=1749479621930&source=portal"]
+    },
+    {
+        "Grupo": "SSMA",
+        "Disciplina": "SSMA",
+        "Entregável": "Gestão de eventos de SSMA",
+        "Descrição/Objetivo": "Realizar gestão, apontamento e tratativas de incidentes de SSMA",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EWvBMMd2DdBOvF2b-JTpRjgBIKLM5zi358xbSmElmTUvpg?e=EnbaeG"]
+    },
+    {
+        "Grupo": "SSMA",
+        "Disciplina": "SSMA",
+        "Entregável": "Gestão preditiva de SSMA",
+        "Descrição/Objetivo": "Solução para monitoramento de sinais vitais de colaboradores em campo através de pulseiras inteligentes, permitindo ações preventivas e ajustes diários para um trabalho seguro e eficiente. Monitore em tempo real, analise dados e integre-se sem atritos à operação, reduzindo acidentes e downtime.\nFuncionalidades:\nPulseira inteligente com soltura automática;\nMonitoramento de sinais vitais;\nTeste de prontidão;\nComunicação em tempo real;\nDetecção de fadiga e sonolência;\nLocalização do colaborador;\n+1000 dados por trabalhador/dia;\nNotificações via Whatsapp;\nAnonimidade dos dados;\nPlataforma em nuvem 24/7;\nConectividade LTE e Wi-FI;\nCertificação para atmosferas explosivas;\nProcessamento offline na borda.",
+        "Solução Digital": "Empresa Parceira",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/gestao-preditiva-ssma.aspx"]
+    },
+    {
+        "Grupo": "SSMA",
+        "Disciplina": "SSMA",
+        "Entregável": "Mobilização de Veículos e Equipamentos",
+        "Descrição/Objetivo": "Ferramenta para gestão da solicitação, análise de documentação e aprovação da mobilização de veículos e equipamentos de empresas terceiras no site",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EaP3Cxo7UqtFi0A-XmX1r6kBQL8sOxHbLcFXhkLFQCEBsw?e=9SSOBM"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Automatizações para leitura de cronogramas + Integração com Dashboards",
+        "Descrição/Objetivo": "Integração de cronogramas para visualização unificada em Dashboards",
+        "Solução Digital": "Primavera/Project etc.",
+        "Links": ["https://app.powerbi.com/reportEmbed?reportId=b05b427f-e037-446c-a4f6-e27988a110ba&autoAuth=true&ctid=67822b61-6451-4d22-a5a8-ec5321cd6b5d"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Gestão de Curto Prazo e Médio Prazo (Programações semanais das atividades)",
+        "Descrição/Objetivo": "Templates para envio das contratadas e/ou automatizações com cronograma para gestão da programação semanal integrada a dashboards, facilitando identificação de desvios e planejamento semanal",
+        "Solução Digital": "",
+        "Links": [
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EVgaQWgJ27pAlkc1M1kXcAUB83xMIydXey76HgyO1zlTMQ?e=RWjfk1",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ESexL6_VVD1OvJZ_ZAng510BalnzAR15ZNF5It_9WPWt8Q?e=UV3Hck",
+            "https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EZm4cFS9d2FLqjMjDKRUSPYBrNaAvEUFdC9WebGDFJATjw?e=TY7Oxh"
+        ]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Validador de Qualidade de Cronograma",
+        "Descrição/Objetivo": "Validar Qualidade dos cronogramas",
+        "Solução Digital": "Utilização do Validador de Cronograma em elaboração pela TD",
+        "Links": []
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Sistema para consolidação de curvas de desembolso de projetos",
+        "Descrição/Objetivo": "Solução ideal para consolidar curvas de desembolso de diversos projetos, servindo com um local único de input de curvas de cronograma (via template excel ou direto no sistema)",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EXnB3dnLfftFsKUV1ifwbPwBTy7pCLPHVTCi35T4dHBjBQ?e=7acwl9"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Lições Aprendidas",
+        "Descrição/Objetivo": "Registro das principais lições aprendidas do projeto",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EZEJUfs35alAn_MvpzsM8j0BfCSfY9oHoy6San2G-foC8Q?e=LnhZbM"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Relatório do projeto (One Page)",
+        "Descrição/Objetivo": "Modelos Diversos de Relatórios contendo informações do projeto (Avanço Físico e Financeiro, comentários etc)",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ERG1GVWweJ1Cv32c63fblM0BeaOiBmoq-3bLGEqjbjAqXA?e=QgkfMs"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Registros de Informações para Resumo Executivo",
+        "Descrição/Objetivo": "Registros semanais de pontos positivos, negativos e atenção para cada área do contrato, permitindo cadastro de ações atreladas a cada ponto (Aplicados em diversas áreas da Vale)",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/ETlYWT91_clCpTcQpTvztDsBj2NpWYkwwMANtsgWFYMrkA?e=LqybGX"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Controle Cronograma de Projetos via PWA",
+        "Descrição/Objetivo": "Utilização do Project Online para cronograma de projetos permitindo mais facilidade na integração com dashboards",
+        "Solução Digital": "Project Online",
+        "Links": ["https://timenow.sharepoint.com/sites/ecossistemadesolucoes/SitePages/Gest%C3%A3o-de-Carteira-de-Projetos-com-PWA.aspx"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Simulador de Capacidade de Recursos de Gestão (Nivelamento de Recursos)",
+        "Descrição/Objetivo": "Simulador que estima a carga de trabalho por recurso de gerenciamento (Planejadores, Fiscais, Técnicos de segurança..) com base em uma divisão da carteira de projetos, HH de dedicação para etapas padrões dentro de cada projeto",
+        "Solução Digital": "Template Excel + Power BI",
+        "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EcyOjk16NARPlXKiOjxj5GIBs_YItWaOpzpWXf6uAJRE1Q?e=PF706O"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Sistema para Gestão das Solicitações de Mudanças (Escopo, Prazo, Valor etc) para projetos",
+        "Descrição/Objetivo": "Solução com fluxo de aprovação de solicitações de mudanças em projetos personalizada com a necessidade do contrato",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ETSuWNhf_oxBmaQiLfllRaUBHMAi8j--CCIaOydpaH6Nsw?e=6cynz7"]
+    },
+    {
+        "Grupo": "Planejamento",
+        "Disciplina": "Planejamento",
+        "Entregável": "Sistema para Solicitação de Novos Investimentos/Projetos",
+        "Descrição/Objetivo": "Solução para o PMO do cliente com intuito de centralizar a gestão de solicitações de novos projetos",
+        "Solução Digital": "Power Platform",
+        "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/Eb9D2H7qk0lPhe4WB5A2HE0BE2aQEYhW0olzoade4dZiIQ?e=eOdts4"]
+    }
+];
+
+// Função para verificar se um link pode ser embedado
+function canEmbed(link) {
+    if (!link) return false;
+    return link.includes('powerapps.com/play') || link.includes('powerbi.com/reportEmbed');
+}
+
+// Função para criar o embed apropriado
+function createEmbedElement(link) {
+    const container = document.createElement('div');
+    container.className = 'embed-container';
+    
+    if (link.includes('powerapps.com/play')) {
+        const iframe = document.createElement('iframe');
+        iframe.src = link;
+        iframe.className = 'powerapps-embed';
+        container.appendChild(iframe);
+    } else if (link.includes('powerbi.com/reportEmbed')) {
+        const iframe = document.createElement('iframe');
+        iframe.src = link;
+        iframe.className = 'powerbi-embed';
+        container.appendChild(iframe);
+    }
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-embed';
+    closeBtn.textContent = 'Fechar';
+    closeBtn.addEventListener('click', () => {
+        container.style.display = 'none';
+    });
+    container.appendChild(closeBtn);
+    
+    return container;
+}
+
+// Função para organizar os dados por grupo e disciplina
+function organizeData(data) {
+    const organized = {};
+    
+    data.forEach(item => {
+        if (!organized[item.Grupo]) {
+            organized[item.Grupo] = {};
+        }
+        
+        if (!organized[item.Grupo][item.Disciplina]) {
+            organized[item.Grupo][item.Disciplina] = [];
+        }
+        
+        organized[item.Grupo][item.Disciplina].push(item);
+    });
+    
+    return organized;
+}
+
+// Função para renderizar a árvore de dados
+function renderTree(organizedData) {
+    const mainTree = document.getElementById('mainTree');
+    mainTree.innerHTML = '';
+    
+    Object.keys(organizedData).forEach(groupName => {
+        const groupLi = document.createElement('li');
+        
+        const groupToggle = document.createElement('div');
+        groupToggle.className = 'tree-toggle group';
+        groupToggle.textContent = groupName;
+        groupLi.appendChild(groupToggle);
+        
+        const groupContent = document.createElement('ul');
+        groupContent.className = 'tree-content';
+        groupLi.appendChild(groupContent);
+        
+        Object.keys(organizedData[groupName]).forEach(disciplineName => {
+            const disciplineLi = document.createElement('li');
+            
+            const disciplineToggle = document.createElement('div');
+            disciplineToggle.className = 'tree-toggle discipline';
+            disciplineToggle.textContent = disciplineName;
+            disciplineLi.appendChild(disciplineToggle);
+            
+            const disciplineContent = document.createElement('ul');
+            disciplineContent.className = 'tree-content';
+            disciplineLi.appendChild(disciplineContent);
+            
+            organizedData[groupName][disciplineName].forEach(deliverable => {
+                const deliverableLi = document.createElement('li');
+                
+                const deliverableDiv = document.createElement('div');
+                deliverableDiv.className = 'deliverable';
+                
+                const title = document.createElement('div');
+                title.className = 'deliverable-title';
+                title.textContent = deliverable.Entregável;
+                deliverableDiv.appendChild(title);
+                
+                const desc = document.createElement('div');
+                desc.className = 'deliverable-desc';
+                desc.textContent = deliverable['Descrição/Objetivo'];
+                deliverableDiv.appendChild(desc);
+                
+                const meta = document.createElement('div');
+                meta.className = 'deliverable-meta';
+                
+                const solution = document.createElement('div');
+                solution.className = 'meta-item';
+                solution.innerHTML = `<span class="meta-label">Solução Digital:</span> ${deliverable['Solução Digital'] || 'Não especificado'}`;
+                meta.appendChild(solution);
+                
+                deliverableDiv.appendChild(meta);
+                
+                // Adiciona controles para os links
+                if (deliverable.Links && deliverable.Links.length > 0 && deliverable.Links[0] !== '') {
+                    const linkButtons = document.createElement('div');
+                    linkButtons.className = 'link-buttons';
+                    
+                    deliverable.Links.forEach((link, index) => {
+                        if (link && link !== '') {
+                            const linkBtn = document.createElement('button');
+                            linkBtn.className = 'link-button';
+                            linkBtn.innerHTML = `<i class="fas fa-external-link-alt"></i> Link ${index+1}`;
+                            
+                            if (canEmbed(link)) {
+                                // Cria container para o embed (será mostrado quando clicado)
+                                const embedContainer = createEmbedElement(link);
+                                embedContainer.style.display = 'none';
+                                deliverableDiv.appendChild(embedContainer);
+                                
+                                linkBtn.addEventListener('click', () => {
+                                    if (!embedContainer.style.display || embedContainer.style.display === 'none') {
+                                        embedContainer.style.display = 'block';
+                                    } else {
+                                        embedContainer.style.display = 'none';
+                                    }
+                                });
+                            } else {
+                                linkBtn.addEventListener('click', () => {
+                                    window.open(link, '_blank');
+                                });
+                            }
+                            
+                            linkButtons.appendChild(linkBtn);
+                        }
+                    });
+                    
+                    deliverableDiv.appendChild(linkButtons);
+                }
+                
+                deliverableLi.appendChild(deliverableDiv);
+                disciplineContent.appendChild(deliverableLi);
+            });
+            
+            groupContent.appendChild(disciplineLi);
+        });
+        
+        mainTree.appendChild(groupLi);
+    });
+    
+    // Adiciona os event listeners após a renderização
+    setupEventListeners();
+}
+
+// Configura os event listeners para os elementos interativos
+function setupEventListeners() {
+    // Toggles para grupos e disciplinas
+    document.querySelectorAll('.tree-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content && content.classList.contains('tree-content')) {
+                content.style.display = this.classList.contains('active') ? 'block' : 'none';
+            }
+        });
+    });
+}
+
+// Organiza os dados e renderiza a árvore
+const organizedData = organizeData(data);
+renderTree(organizedData);
+
+// Abre o primeiro grupo por padrão
+document.querySelector('.tree-toggle.group').click();
+
+document.getElementById("searchInput").addEventListener("input", function () {
+    const term = this.value.toLowerCase().trim();
+    const allToggles = document.querySelectorAll(".tree-toggle");
+    const allContents = document.querySelectorAll(".tree-content");
+    const allLis = document.querySelectorAll("#mainTree li");
+
+    const resetTree = () => {
+        allToggles.forEach(toggle => toggle.classList.remove("expanded"));
+        allContents.forEach(content => content.style.display = "none");
+        allLis.forEach(li => li.style.display = "");
+    };
+
+    if (term === "") {
+        resetTree();
+        return;
+    }
+
+    // Oculta tudo inicialmente
+    allLis.forEach(li => li.style.display = "none");
+    allToggles.forEach(toggle => toggle.classList.remove("expanded"));
+    allContents.forEach(content => content.style.display = "none");
+
+    // Exibir itens correspondentes e expandir hierarquias
+    allLis.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        if (text.includes(term)) {
+            li.style.display = "";
+
+            let parent = li.parentElement;
+            while (parent && parent.classList.contains("tree-content")) {
+                parent.style.display = "block";
+                const toggle = parent.previousElementSibling;
+                if (toggle && toggle.classList.contains("tree-toggle")) {
+                    toggle.classList.add("expanded");
+                }
+                parent = parent.parentElement.closest(".tree-content");
+            }
+        }
+    });
+
+    // Expandir visualmente todos os toggles que precisam estar abertos
+    allToggles.forEach(toggle => {
+        if (toggle.classList.contains("expanded")) {
+            const content = toggle.nextElementSibling;
+            if (content && content.classList.contains("tree-content")) {
+                content.style.display = "block";
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
