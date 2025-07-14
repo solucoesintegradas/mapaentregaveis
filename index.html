@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Mapa de Entregáveis e Soluções - Gerenciamento</title>
+    <title>Mapa de Entregáveis e Soluções - Gerenciamento Pleno</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -61,6 +61,7 @@
             border-radius: 4px;
             margin: 5px 0;
             display: flex;
+            width: 95%;
             align-items: center;
         }
         .tree-toggle:hover { background-color: var(--hover-color); }
@@ -79,7 +80,7 @@
         .tree-content { display: none; }
         .tree-toggle.active + .tree-content { display: block; }
         .group { font-weight: bold; font-size: 18px; color: var(--primary-color); }
-        .discipline { font-weight: 600; font-size: 16px; color: var(--secondary-color); }
+        .discipline { width: 95%; font-weight: 600; font-size: 16px; color: var(--secondary-color); }
         .deliverable {
             background: #fff;
             border: 1px solid var(--border-color);
@@ -124,7 +125,7 @@
             height: 600px;
         }
         .powerapps-embed, .powerbi-embed {
-            width: 100%;
+            width: 95%;
             height: 100%;
             border: none;
         }
@@ -152,18 +153,9 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Mapa de Entregáveis e Soluções - Gerenciamento</h1>
-        <p>
-            O mapa de entregáveis e soluções de gerenciamento reúne modelos de soluções digitais que podem ser aplicadas a diversas 
-            disciplinas dentro dos contratos. Ela reúne soluções que já integram o ecossistema de soluções da 
-            TimeNow, que pode ser acessado pelo link: 
-            <a href="https://timenow.sharepoint.com/sites/ecossistemadesolucoes" target="_blank" style="color: white; font-weight: bold;">
-                Clique aqui
-            </a>, e soluções que já rodam em outros contratos.
-        </p>
-
-
-        <input type="text" id="searchInput" placeholder="Digite para buscar entregáveis..." style="margin-top: 15px; padding: 10px; width: 90%; border: none; border-radius: 5px; font-size: 16px;">
+        <h1>Mapa de Entregáveis e Soluções - Gerenciamento Pleno</h1>
+        <p>Visualização integrada dos sistemas</p>
+        <input type="text" id="searchInput" placeholder="Digite para buscar entregáveis..." style="margin-top: 15px; padding: 10px; width: 95%; border: none; border-radius: 5px; font-size: 16px;">
     </div>
     <ul class="tree" id="mainTree">
         <!-- Conteúdo será gerado pelo JavaScript -->
@@ -184,7 +176,7 @@ const data = [
     {
         "Grupo": "Administrativo",
         "Disciplina": "Administrativo",
-        "Entregável": "Central de Ações e Atas de Reunião",
+        "Entregável": "Central de Ações e Atas de Reunião (Fora Ecossistema)",
         "Descrição/Objetivo": "Central de Registro e monitoramento das atas de reuniões e ações das disciplinas do contrato",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/Efz8lGcC8NhBr4kjvQEmzNMBVw7LeKNK5RlZHvbWKptFuw?e=9ciV0V"]
@@ -219,7 +211,7 @@ const data = [
     {
         "Grupo": "Administrativo",
         "Disciplina": "Administrativo",
-        "Entregável": "Consolidação dos dados da plataforma VEXPENSES",
+        "Entregável": "Consolidação dos dados da plataforma VEXPENSES (Fora Ecossistema)",
         "Descrição/Objetivo": "Automação para consolidação dos relatórios PDFs do VExpenses em um banco de dados único com os gastos de viagens",
         "Solução Digital": "RPA",
         "Links": []
@@ -227,7 +219,7 @@ const data = [
     {
         "Grupo": "Administrativo",
         "Disciplina": "Administrativo",
-        "Entregável": "ChatBot de Projetos",
+        "Entregável": "ChatBot de Projetos (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução para consulta de procedimentos, dúvidas e informações provenientes dentro do contrato via chat no teams (Chatbot)",
         "Solução Digital": "MS Virtual Agents",
         "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EdBTVHZ1w7NNq2muvd7EUUkBl1QDTDCTj_w-bveCVqg08Q?e=ca8R61"]
@@ -235,7 +227,7 @@ const data = [
     {
         "Grupo": "Aquisições",
         "Disciplina": "Aquisições",
-        "Entregável": "Controle de Contrações/Fornecimentos (Mapa de Suprimentos - MAS)",
+        "Entregável": "Controle de Contrações/Fornecimentos (Mapa de Suprimentos - MAS) (Fora Ecossistema)",
         "Descrição/Objetivo": "Monitoramento do andamento da contratação de fornecimentos de serviços e materiais, com prazos e status das contratações. Solução pode ser personalizada para extração de dados do SAP + Sistema Power Platform",
         "Solução Digital": "Power Platform",
         "Links": []
@@ -243,7 +235,7 @@ const data = [
     {
         "Grupo": "Aquisições",
         "Disciplina": "Aquisições",
-        "Entregável": "Controle de Entrada e Saída de materiais - Gestão do estoque de materiais",
+        "Entregável": "Controle de Entrada e Saída de materiais - Gestão do estoque de materiais (Fora Ecossistema)",
         "Descrição/Objetivo": "Controlar a entrada e saída de materiais via aplicativo com informações de quantidade, peso, fotos de evidência e geração do inventário",
         "Solução Digital": "Power Platform",
         "Links": [
@@ -254,7 +246,7 @@ const data = [
     {
         "Grupo": "Aquisições",
         "Disciplina": "Aquisições",
-        "Entregável": "IA Análise de Propostas Técnicas",
+        "Entregável": "IA Análise de Propostas Técnicas (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução para auxílio na identificação das propostas técnicas mais aderentes as RTs usando inteligência artificial (Sugerindo notas e recomendações)",
         "Solução Digital": "Kyno",
         "Links": ["https://timenow-my.sharepoint.com/:v:/g/personal/guilherme_pacheco_timenow_com_br/ESez9phMInBMuaIYK7nLceoBlMOEOBeWMgGFV-_eZjarmA?e=sTX45R"]
@@ -298,7 +290,7 @@ const data = [
     {
         "Grupo": "Engenharia",
         "Disciplina": "Engenharia",
-        "Entregável": "Gestão de solicitações de informações técnicas, alterações de projeto e Não conformidades do projeto",
+        "Entregável": "Gestão de solicitações de informações técnicas, alterações de projeto e Não conformidades do projeto (Fora Ecossistema)",
         "Descrição/Objetivo": "Realização de registros e tratativas de informações técnicas, alterações de projeto e Não conformidades do projeto. Mantendo comunicação clara entre os times de engenharia e implantação das contratadas e gerenciadora",
         "Solução Digital": "Autodesk/PowerPlatform",
         "Links": []
@@ -306,7 +298,7 @@ const data = [
     {
         "Grupo": "Implantação",
         "Disciplina": "Fiscalização e Qualidade",
-        "Entregável": "Relatório Diário de Fiscalização",
+        "Entregável": "Relatório Diário de Fiscalização (Fora Ecossistema)",
         "Descrição/Objetivo": "Relatório diário da fiscalização de campo da gerenciadora com informações relevantes da fiscalização sobre as frentes de obra (Desvios, Registros de paradas etc.)",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/Edb8jcMfUN5Hl5ur9d0_W58BRqBR71Jm6iheoepA6s8OtA?e=W43c1L"]
@@ -314,7 +306,7 @@ const data = [
     {
         "Grupo": "Implantação",
         "Disciplina": "Fiscalização e Qualidade",
-        "Entregável": "Não Conformidades de fornecedores",
+        "Entregável": "Não Conformidades de fornecedores (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução para registros e tratativas de não conformidades identificadas nos fornecedores (materiais, fornecimentos, documentos etc), personalizável com a necessidade do contrato",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/ET_A2qOhaX5Njekht0nyJ8YBnZhTxeRJDWtOk0d-KXTlUA?e=EsPXO7"]
@@ -374,7 +366,7 @@ const data = [
     {
         "Grupo": "SSMA",
         "Disciplina": "SSMA",
-        "Entregável": "Gestão da entrada/mobilização de veículos e equipamentos",
+        "Entregável": "Gestão da entrada/mobilização de veículos e equipamentos (Fora Ecossistema)",
         "Descrição/Objetivo": "Realizar a gestão do processo de mobilização de novos veículos na área do cliente, veículos da timenow e de contratadas. Verificando documentação e conformidade dos equipamentos",
         "Solução Digital": "Power Platform",
         "Links": ["https://apps.powerapps.com/play/e/default-67822b61-6451-4d22-a5a8-ec5321cd6b5d/a/69e2fcfd-e972-4034-bc77-730134ce2bd3?tenantId=67822b61-6451-4d22-a5a8-ec5321cd6b5d&hint=904d9992-bdc8-4f98-b27d-c68981304b1a&sourcetime=1749479621930&source=portal"]
@@ -382,7 +374,7 @@ const data = [
     {
         "Grupo": "SSMA",
         "Disciplina": "SSMA",
-        "Entregável": "Gestão de eventos de SSMA",
+        "Entregável": "Gestão de ocorrências de eventos de SSMA (Fora Ecossistema)",
         "Descrição/Objetivo": "Realizar gestão, apontamento e tratativas de incidentes de SSMA",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EWvBMMd2DdBOvF2b-JTpRjgBIKLM5zi358xbSmElmTUvpg?e=EnbaeG"]
@@ -414,7 +406,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Gestão de Curto Prazo e Médio Prazo (Programações semanais das atividades)",
+        "Entregável": "Gestão de Curto Prazo e Médio Prazo (Programações semanais das atividades & 6WLA) (Fora Ecossistema)",
         "Descrição/Objetivo": "Templates para envio das contratadas e/ou automatizações com cronograma para gestão da programação semanal integrada a dashboards, facilitando identificação de desvios e planejamento semanal",
         "Solução Digital": "",
         "Links": [
@@ -434,7 +426,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Sistema para consolidação de curvas de desembolso de projetos",
+        "Entregável": "Sistema para consolidação de curvas de desembolso de projetos (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução ideal para consolidar curvas de desembolso de diversos projetos, servindo com um local único de input de curvas de cronograma (via template excel ou direto no sistema)",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EXnB3dnLfftFsKUV1ifwbPwBTy7pCLPHVTCi35T4dHBjBQ?e=7acwl9"]
@@ -442,8 +434,8 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Lições Aprendidas",
-        "Descrição/Objetivo": "Registro das principais lições aprendidas do projeto",
+        "Entregável": "Lições Aprendidas (Fora Ecossistema)",
+        "Descrição/Objetivo": "Registro das principais Lições Aprendidas (Fora Ecossistema) do projeto",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/EZEJUfs35alAn_MvpzsM8j0BfCSfY9oHoy6San2G-foC8Q?e=LnhZbM"]
     },
@@ -458,7 +450,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Registros de Informações para Resumo Executivo",
+        "Entregável": "Registros de Informações para Resumo Executivo (Fora Ecossistema)",
         "Descrição/Objetivo": "Registros semanais de pontos positivos, negativos e atenção para cada área do contrato, permitindo cadastro de ações atreladas a cada ponto (Aplicados em diversas áreas da Vale)",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:v:/s/TransformationManagementOffice-TMO-DO3/ETlYWT91_clCpTcQpTvztDsBj2NpWYkwwMANtsgWFYMrkA?e=LqybGX"]
@@ -474,7 +466,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Simulador de Capacidade de Recursos de Gestão (Nivelamento de Recursos)",
+        "Entregável": "Simulador de Capacidade de Recursos de Gestão (Nivelamento de Recursos) (Fora Ecossistema)",
         "Descrição/Objetivo": "Simulador que estima a carga de trabalho por recurso de gerenciamento (Planejadores, Fiscais, Técnicos de segurança..) com base em uma divisão da carteira de projetos, HH de dedicação para etapas padrões dentro de cada projeto",
         "Solução Digital": "Template Excel + Power BI",
         "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/EcyOjk16NARPlXKiOjxj5GIBs_YItWaOpzpWXf6uAJRE1Q?e=PF706O"]
@@ -482,7 +474,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Sistema para Gestão das Solicitações de Mudanças (Escopo, Prazo, Valor etc) para projetos",
+        "Entregável": "Sistema para Gestão das Solicitações de Mudanças (Escopo, Prazo, Valor etc) para projetos (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução com fluxo de aprovação de solicitações de mudanças em projetos personalizada com a necessidade do contrato",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/ETSuWNhf_oxBmaQiLfllRaUBHMAi8j--CCIaOydpaH6Nsw?e=6cynz7"]
@@ -490,7 +482,7 @@ const data = [
     {
         "Grupo": "Planejamento",
         "Disciplina": "Planejamento",
-        "Entregável": "Sistema para Solicitação de Novos Investimentos/Projetos",
+        "Entregável": "Sistema para Solicitação de Novos Investimentos/Projetos (Fora Ecossistema)",
         "Descrição/Objetivo": "Solução para o PMO do cliente com intuito de centralizar a gestão de solicitações de novos projetos",
         "Solução Digital": "Power Platform",
         "Links": ["https://timenow.sharepoint.com/:i:/s/TransformationManagementOffice-TMO-DO3/Eb9D2H7qk0lPhe4WB5A2HE0BE2aQEYhW0olzoade4dZiIQ?e=eOdts4"]
